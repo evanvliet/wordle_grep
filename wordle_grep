@@ -1,19 +1,11 @@
 #!/bin/bash
 # usage: wordle_grep green yellow black, e.g. wordle_grep .a.r ....e st
 # needs three letter occurrence sequences, using dots to specify location
-
-# delete words that do not match green letters
-# and those having a black character
-OP="-e /^$1/!d -e /[$3]/d"
-# initialize prefix dots needed for yellow character filtering
-PD=''
-for CH in $(grep -o . <<< $2) # for each yellow
-do
-    # if not dot add filter to delete words without the yellow character
-    # and use PD to delete words that have the yellow character in that position
+OP="-e /^${1}/!d -e /[${3:-=}]/d"
+PD='' # initialize prefix dots needed for yellow character filtering
+for CH in $(grep -o . <<< ${2:-.}) # for each yellow
+do # if not dot add filter to delete words without the yellow character
     [ $CH = '.' ] || OP="$OP -e /$CH/!d -e /^$PD$CH/d"
-    PD=$PD. # prefix dots for pattern
+    PD=$PD. # to delete words with character at same position
 done
-# fourth arg specifies input list
-# useful to refine previous screen
 sed $OP ${4:-$BASH_SOURCE.dat}

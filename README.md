@@ -14,12 +14,26 @@ Uses sed to print matches to a green, yellow, black specification. The specifica
 + \<black letters\> : *e.g.*, jks if j, k, and s all are black  
 Use a dot (.) as a place holder, position significant for green and yellow
 letters. 
-### Dependency
-The default word list comes from the pre-New York Times version of wordle.
-Uses sed, tr, grep, bash.
+
 ## Features
 + A plain dot means no characters of a particular color.
-+ A previous output list save in a file can refine a search.
-+ Can screen multiple yellow characters in same position.
-And will be much faster.
-+ But it is quite speedy as is, runs less than .1 seconds.
++ A previous output list saved in a file can refine a search.
+
+## Dependency
+The default word list comes from the pre-New York Times version of wordle.
+Uses sed, tr, grep, bash.
+
+bee_grep
+==
+
+A comand line  ilter, prints possible words for the NY Times bee puzzle.  Use from a bash prompt.
+
+## Synopsis
+
+bee_grep abcdefg
+
+## Description
+
+Prints words with initial 'a' character using only letters abcdefg from argument.
+
+
