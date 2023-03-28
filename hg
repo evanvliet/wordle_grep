@@ -1,0 +1,9 @@
+#!/bin/bash
+# usage:
+    # get hangman screen shot on clipboard
+    # hg
+    # paste clipboard into hangman
+
+pushd $(dirname $BASH_SOURCE) > /dev/null
+./hg.py hg.dat
+popd > /dev/null

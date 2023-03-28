@@ -1,4 +1,4 @@
 #!/bin/bash
 # usage: bee_grep afjklmo
 # for words that include first char and use only chars from afjklmo
-sed -e /[^$1]/d -e /${1:0:1}/\!d -e /..../\!d $BASH_SOURCE.dat
+sed -e /[^$1]/d -e /${1:0:1}/\!d -e /..../\!d $BASH_SOURCE.dat | pr -t4
