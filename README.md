@@ -26,7 +26,7 @@ Uses sed, tr, grep, bash.
 bee_grep
 ==
 
-A comand line  ilter, prints possible words for the NY Times bee puzzle.  Use from a bash prompt.
+A comand line filter, prints possible words for the NY Times bee puzzle.  Use from a bash prompt.
 
 ## Synopsis
 
@@ -34,6 +34,22 @@ bee_grep abcdefg
 
 ## Description
 
-Prints words with initial 'a' character using only letters abcdefg from argument.
+hg
+==
 
+Calculate a guess for the old unix hangman game. 
 
+## Synopsis
+
+<get hangman screen in clipboard>
+hg
+<paste clipboard into hangman guess>
+
+## Description
+
+Invokes python to match possible words and accumulate counts of letter occurrences, puts most common possible character to clipboard as next guess.
+
+## Files
++ hg - hangman guesser
++ hg.dat - hg word list
++ hg.py - python of course
