@@ -21,23 +21,20 @@ def ghs():
     get last lines of clipboard containing hangman screen
     """
     s = check_output('pbpaste').decode('utf-8').split('\n')
-    k = len(s)
-    while k:
-        k = k - 1
+    for k in range(len(s)-1, 0, -1):
         if 'Guess' in s[k]:
-            return '\n'.join(s[k-12:k])
-    return ''
+            return s[k-9:k]
  
 class Hangman:  # guess for hangman
 
     def __init__(self):
         try:
-            screen = ghs()
-            self.counter = collections.Counter()
-            self.guess = set(re.search(r'Guessed: +([a-z]*)', screen).group(1))
-            self.word = re.search(r'Word: +([-a-z]*)', screen).group(1)
+            s = ghs()
+            self.guess = set(re.search(r'Guessed: +([a-z]*)', s[0]).group(1))
+            self.word = re.search(r'Word: +([-a-z]*)', s[-1]).group(1)
             self.length = len(self.word)
             self.exclusions = self.guess - set(self.word)
+            self.counter = collections.Counter()
             self.map = str.maketrans(string.ascii_lowercase, "".join([l
                 if l in self.word else "-" for l in string.ascii_lowercase]))
         except:
@@ -53,15 +50,19 @@ class Hangman:  # guess for hangman
 
     def check(self, word):
         '''Check length, no bad guessed, matches guessed.'''
-        return (len(word) == self.length
-            and not set(word) & self.exclusions
-            and word.translate(self.map) == self.word
-            or self.counter.update([c for c in set(word) - self.guess]))
+        if (len(word) == self.length
+                and not set(word) & self.exclusions
+                and word.translate(self.map) == self.word):
+            self.counter.update([c for c in set(word) - self.guess])
+            return True
+        return False
 
 if __name__ == '__main__':
     hangman = Hangman()
     nm = 0
     for line in open("hg.dat"):
+        if len(line) > hangman.length + 1:
+            break
         if hangman.check(line.strip()):
             nm += 1
             if nm <= 8:
