@@ -12,7 +12,7 @@
             "program": "${file}",
             "args": ["hg.dat"],
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
         }
     ]
 }
