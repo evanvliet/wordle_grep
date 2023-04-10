@@ -33,7 +33,7 @@ class Hangman:  # guess for hangman
             self.guess = set(re.search(r'Guessed: +([a-z]*)', s[0]).group(1))
             self.word = re.search(r'Word: +([-a-z]*)', s[-1]).group(1)
             self.length = len(self.word)
-            self.exclusions = self.guess - set(self.word)
+            self.wrong = self.guess - set(self.word)
             self.counter = collections.Counter()
             self.map = str.maketrans(string.ascii_lowercase, "".join([l
                 if l in self.word else "-" for l in string.ascii_lowercase]))
@@ -50,10 +50,9 @@ class Hangman:  # guess for hangman
 
     def check(self, word):
         '''Check length, no bad guessed, matches guessed.'''
-        if (len(word) == self.length
-                and not set(word) & self.exclusions
-                and word.translate(self.map) == self.word):
-            self.counter.update([c for c in set(word) - self.guess])
+        right = set(word)
+        if not right & self.wrong and word.translate(self.map) == self.word:
+            self.counter.update([c for c in right - self.guess])
             return True
         return False
 
@@ -61,9 +60,12 @@ if __name__ == '__main__':
     hangman = Hangman()
     nm = 0
     for line in open("hg.dat"):
-        if len(line) > hangman.length + 1:
+        word = line.strip()
+        if len(word) < hangman.length:
+            continue
+        if len(word) > hangman.length:
             break
-        if hangman.check(line.strip()):
+        if hangman.check(word):
             nm += 1
             if nm <= 8:
                 print(line, end='')
