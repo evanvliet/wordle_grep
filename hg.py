@@ -15,23 +15,33 @@ from collections import Counter
 from subprocess import check_output, Popen, PIPE
 
 
-def ghs():
+def get_screen():
     """
-    get last lines of clipboard containing hangman screen
+    get lines from clipboard containing hangman screen
     """
+    def last_word(s):
+        return s.split()[-1]
+
     s = check_output('pbpaste').decode('utf-8').split('\n')
     for k in range(len(s)-1, 0, -1):
         if s[k][:5] == 'Guess':
-            return s[k-9:k]
+            return [last_word(s[k-1]), last_word(s[k-9])]
+
+
+def copy_char(c):
+    """
+    copy character to clipboard
+    """
+    Popen('pbcopy', stdin=PIPE).communicate(c)
 
 
 class Hangman:  # guess for hangman
 
     def __init__(self):
         try:
-            s = ghs()
-            self.guess = set(s[0].split()[-1])
-            self.word = s[-1].split()[-1]
+            s = get_screen()
+            self.word = s[0]
+            self.guess = set(s[1])
             self.length = len(self.word)
             self.wrong = self.guess - set(self.word)
             self.counter = Counter()
@@ -65,5 +75,5 @@ if __name__ == '__main__':
             break
         hangman.check(word)
 
-    # paste guess
-    Popen('pbcopy', stdin=PIPE).communicate(hangman.suggest())
+    # copy suggestion to clipboard
+    copy_char(hangman.suggest())
