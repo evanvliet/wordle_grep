@@ -1,7 +1,4 @@
 .fm
-hg1.py
-wa
-wb
+hg.out
 .vscode/launch.json
 .gitignore
-.hg.py.swp

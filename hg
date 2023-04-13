@@ -5,10 +5,7 @@
     # paste clipboard into hangman
 
 pushd $(dirname $BASH_SOURCE) > /dev/null
-test "$1" = "-n" && rm -f hg.1
-test -f hg.1 || cp hg.dat hg.1
-./hg.py hg.1 > hg.new
-mv hg.new hg.1
-wc -l < hg.1
-head -3 hg.1
+./hg.py > hg.out
+wc -l < hg.out
+head -3 hg.out
 popd > /dev/null
