@@ -1,0 +1,11 @@
+#!/bin/bash
+# usage:
+    # get hangman screen shot on clipboard
+    # gah
+    # paste clipboard into hangman
+
+pushd $(dirname $BASH_SOURCE) > /dev/null
+./gah.py > gah.out
+wc -l < gah.out
+head -3 gah.out
+popd > /dev/null
