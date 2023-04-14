@@ -34,22 +34,25 @@ bee_grep abcdefg
 
 ## Description
 
-hg
+Uses sed to filter all words starting with the distinguished letter and having only letters from the puzzle.
+
+gah
 ==
 
-Calculate a guess for the old unix hangman game. 
+Guess at hangman, the old unix game, cf. bsdgames. 
 
 ## Synopsis
 
-<get hangman screen in clipboard>
-hg
-<paste clipboard into hangman guess>
++ get hangman screen in clipboard
++ gah
++ paste clipboard into hangman guess
 
 ## Description
 
-Invokes python to match possible words and accumulate counts of letter occurrences, puts most common possible character to clipboard as next guess.
+Invokes python to match possible words and accumulate counts of words each letter is in,
+puts letter that occurs most among possible matches to clipboard as next guess.
 
 ## Files
-+ hg - hangman guesser
-+ hg.dat - hg word list
-+ hg.py - python of course
++ gah - hangman guesser
++ gahdict - has word lists by length
++ gah.py - python of course
