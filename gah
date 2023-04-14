@@ -6,6 +6,6 @@
 
 pushd $(dirname $BASH_SOURCE) > /dev/null
 ./gah.py > gah.out
-wc -l < gah.out
+echo $(wc -l < gah.out) words try $(pbpaste)
 head -3 gah.out
 popd > /dev/null
