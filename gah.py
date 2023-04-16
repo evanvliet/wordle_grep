@@ -49,7 +49,7 @@ class Gah:  # guess at hangman
         '''Check for wrong letters guessed and matches right ones.'''
         if set(word) & self.wrong or word.translate(self.map) != self.word:
             return False
-        # increment count by one per word, vs. per occurrence
+        # increment count for each word occurrence (vs character)
         self.counter.update([c for c in set(word) - self.guess])
         return True
 
@@ -57,8 +57,7 @@ class Gah:  # guess at hangman
 if __name__ == '__main__':
     gah = Gah(*get_screen())
     for line in open(gah.data):
-        word = line.strip()
-        if gah.check(word):
-            print(word)
+        if gah.check(line.strip()):
+            print(line, end='')
     # copy suggestion to clipboard
     copy_char(gah.suggest())
