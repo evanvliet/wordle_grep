@@ -1,6 +1,13 @@
 #!/bin/bash
 # usage: wordle_grep green yellow black, e.g. wordle_grep .a.r ....e st
 # needs three letter occurrence sequences, using dots to specify location
+MATCHES=wordle_grep.now
+GUESSES=wa.1
+WITH_LETTER=wa.2
+WORD_LIST=$BASH_SOURCE.dat
+FIRST="$(echo $* | grep -o . | sort | tr -cd '[a-z]')"
+test -s $MATCHES -a "aeors" != "$FIRST" && WORD_LIST=$MATCHES
+
 OP="-e /^${1}/!d -e /[${3:-=}]/d"
 PD='' # initialize prefix dots needed for yellow character filtering
 for CH in $(grep -o . <<< ${2:-.}) # for each yellow
@@ -8,4 +15,25 @@ do # if not dot add filter to delete words without the yellow character
     [ $CH = '.' ] || OP="$OP -e /$CH/!d -e /^$PD$CH/d"
     PD=$PD. # to delete words with character at same position
 done
-sed $OP ${4:-$BASH_SOURCE.dat}
+sed $OP $WORD_LIST > $GUESSES
+
+# find guess with most letters in common with matches
+# sort letters in matches by occurrence
+
+cp $GUESSES $MATCHES
+for i in $(
+    grep -o . $MATCHES | \
+    sort | \
+    uniq -c | \
+    sort -nr | \
+    sed -e 's/ *[0-9]* //'
+    )
+do
+    # prune matches for each letter
+    grep $i $GUESSES > $WITH_LETTER
+    test -s $WITH_LETTER || continue # skip letter
+    
+    mv $WITH_LETTER $GUESSES
+done
+cat $GUESSES
+rm -f $WITH_LETTER $GUESSES
