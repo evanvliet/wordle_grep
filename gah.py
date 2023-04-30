@@ -28,6 +28,7 @@ def get_screen():
     for k in range(len(s)-1, 0, -1):
         if s[k][1:6] == 'Word:':
             return (last_word(s[k-8]), last_word(s[k]))
+    return ('?', '?' )
 
 
 class Gah:  # guess at hangman
@@ -37,7 +38,7 @@ class Gah:  # guess at hangman
         self.guess = set(guess)
         self.wrong = self.guess - set(self.word)
         self.data = f'gahdict/{len(self.word)}'
-        self.counter = Counter()
+        self.counter = Counter('?')
         self.map = str.maketrans(ascii_lowercase, "".join(
             [l if l in self.word else "-" for l in ascii_lowercase]))
 
