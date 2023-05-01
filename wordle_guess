@@ -1,0 +1,81 @@
+#!/bin/bash
+# A comand line wordle player, prints suggested word.
+#
+# wordle_guess <green letters> <yellow letters> <black letters>
+#
+# Uses sed to find matches to a green, yellow, black specification. The
+# specification is three strings for the green, yellow, and black
+# characters on the wordle puzzle line. Examples:
+#
+# <green letters>   e.g., ..a.b if 3rd and 5th letters are green a and b
+# <yellow letters>  e.g., .e.h  if 2nd and 4th letters are yellow e and h
+# <black letters>   e.g., jks   if j, k, and s all are black
+#
+# Use a dot (.) as a place holder, as position is significant for green
+# and yellow letters. A plain dot means no color character at that spot.
+# 
+# Saves the sed output of matching words in local file for next guess.
+# 
+# Proceeds to pick a guess from this output. Looks for a word that has
+# the most characters in common with other possible matches.  Considers
+# most common letters among the matches first. For each character finds
+# matches with that letter. If some exist,  use the result for further
+# pruning. Prints the final smallest subset.
+# 
+# Called without arguments, it scans a word list from the pre-New York
+# Times version of wordle, saved as $BASH_SOURCE.dat, e.g.
+# wordle_guess.dat. In this case the above algorithm for picking a
+# guess suggests "arose" - an ok choice.
+
+FULL_LIST=$BASH_SOURCE.dat
+WORD_LIST=wg_last
+SED_OUTPUT=$(mktemp)
+SED_COMMANDS=$(mktemp)
+
+green_char_filter() { # delete words that do not match green pattern
+    echo "/^${1}/!d"
+}
+
+black_char_filter() { # delete words that have one of the black letters
+    echo "/[${1}]/d"
+}
+
+yellow_char_filter() { # filter for yellow characters
+    prefix_dots='' # to specify position in regular expression
+    for yellow_letter in $(grep -o . <<<$1); do
+        # if not dot add filters
+        test $yellow_letter != '.' && echo "# delete lines without $yellow_letter
+            /$yellow_letter/!d
+            # delete words with $yellow_letter at same spot
+            /^$prefix_dots$yellow_letter/d"
+        prefix_dots=$prefix_dots. # add dot to position
+    done
+}
+
+common_letters() { # get letters most common first
+    grep -o . $1 | sort | uniq -c | sort -nr | tr -d '[0-9]'
+}
+
+# use full word list if no args so new puzzle
+test -n "$1" || rm -f $WORD_LIST
+test -s $WORD_LIST || cp $FULL_LIST $WORD_LIST
+
+# set up sed commands
+yellow_char_filter ${2:-.} >$SED_COMMANDS
+green_char_filter ${1:-.} >>$SED_COMMANDS
+black_char_filter ${3:-.} >>$SED_COMMANDS
+
+# get possible matches
+sed -f $SED_COMMANDS $WORD_LIST >$SED_OUTPUT
+cp $SED_OUTPUT $WORD_LIST # save for next guess
+
+# get letters in order most frequent first
+letters=$(grep -o . $SED_OUTPUT | sort | uniq -c | sort -nr | tr -d '[0-9]')
+SED_TMP=$(mktemp) # subset containing letter
+for letter in $letters; do
+    grep $letter $SED_OUTPUT >$SED_TMP && mv $SED_TMP $SED_OUTPUT
+done
+cat $SED_OUTPUT # suggested guess
+
+# clean up
+rm -f $SED_TMP $SED_OUTPUT $SED_COMMANDS
