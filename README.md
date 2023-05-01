@@ -1,11 +1,11 @@
-wordle_grep
+wordle_guess
 ==
 
-A comand line wordle filter, prints suggested word.  Use from a bash prompt.
+A comand line wordle guesser, prints suggested word.
 
 ## Synopsis
 
-wordle_grep \<green letters\> \<yellow letters\> \<black letters\>
+wordle_guess \<green letters\> \<yellow letters\> \<black letters\>
  
 ## Description
 Uses sed to find matches to a green, yellow, black specification. The specification is three strings for the green, yellow, and black characters on the wordle puzzle line. Examples:
