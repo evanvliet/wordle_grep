@@ -5,7 +5,7 @@
 #
 # Uses sed to find matches to a green, yellow, black specification. The
 # specification is three strings for the green, yellow, and black
-# characters on the wordle puzzle line. Examples:
+# characters on the last wordle puzzle line. Examples:
 #
 # <green letters>   e.g., ..a.b if 3rd and 5th letters are green a and b
 # <yellow letters>  e.g., .e.h  if 2nd and 4th letters are yellow e and h
@@ -50,10 +50,6 @@ yellow_char_filter() { # filter for yellow characters
             /^$prefix_dots$yellow_letter/d"
         prefix_dots=$prefix_dots. # add dot to position
     done
-}
-
-common_letters() { # get letters most common first
-    grep -o . $1 | sort | uniq -c | sort -nr | tr -d '[0-9]'
 }
 
 # use full word list if no args so new puzzle
