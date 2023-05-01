@@ -62,5 +62,4 @@ done
 cat $SED_OUTPUT # suggested guess
 
 # clean up
-cp $SED_COMMANDS wg.sed
 rm -f $SED_TMP $SED_OUTPUT $SED_COMMANDS
