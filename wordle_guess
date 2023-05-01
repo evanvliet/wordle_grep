@@ -32,34 +32,22 @@ WORD_LIST=wg_last
 SED_OUTPUT=$(mktemp)
 SED_COMMANDS=$(mktemp)
 
-green_char_filter() { # delete words that do not match green pattern
-    echo "/^${1}/!d"
-}
-
-black_char_filter() { # delete words that have one of the black letters
-    echo "/[${1}]/d"
-}
-
-yellow_char_filter() { # filter for yellow characters
-    prefix_dots='' # to specify position in regular expression
-    for yellow_letter in $(grep -o . <<<$1); do
-        # if not dot add filters
-        test $yellow_letter != '.' && echo "# delete lines without $yellow_letter
-            /$yellow_letter/!d
-            # delete words with $yellow_letter at same spot
-            /^$prefix_dots$yellow_letter/d"
-        prefix_dots=$prefix_dots. # add dot to position
-    done
-}
-
 # use full word list if no args so new puzzle
 test -n "$1" || rm -f $WORD_LIST
 test -s $WORD_LIST || cp $FULL_LIST $WORD_LIST
 
 # set up sed commands
-yellow_char_filter ${2:-.} >$SED_COMMANDS
-green_char_filter ${1:-.} >>$SED_COMMANDS
-black_char_filter ${3:-.} >>$SED_COMMANDS
+echo "/^${1:-.}/!d" >$SED_COMMANDS # match green characters
+echo "/[${3:-.}]/d" >>$SED_COMMANDS # delete words with black characters
+# yellow characters more tricky
+dots='' # to specify position
+for yellow in $(grep -o . <<<${2:-.}); do
+    if test $yellow != '.'; then
+        echo /$yellow/!d # delete lines without yellow
+        echo /^$dots$yellow/d # delete words with yellow at same spot
+    fi
+    dots=$dots. # add dot to position
+done >>$SED_COMMANDS
 
 # get possible matches
 sed -f $SED_COMMANDS $WORD_LIST >$SED_OUTPUT
@@ -74,4 +62,5 @@ done
 cat $SED_OUTPUT # suggested guess
 
 # clean up
+cp $SED_COMMANDS wg.sed
 rm -f $SED_TMP $SED_OUTPUT $SED_COMMANDS
