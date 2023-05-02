@@ -31,10 +31,6 @@ FULL_LIST=$BASH_SOURCE.dat # full list from old wordle site
 WORD_LIST=wg_last          # local file holding last matches
 MATCHES=$(mktemp)          # work copy of current scan
 
-# use full word list if no args so new puzzle
-test "$1"          || rm -f $WORD_LIST
-test -s $WORD_LIST || cp $FULL_LIST $WORD_LIST
-
 # get sed commands for wordle matching
 sed_commands() {
     echo "/^${1:-.}/!d" # match green characters
@@ -50,10 +46,12 @@ sed_commands() {
 }
 
 # get possible matches
+test "$1" || rm -f $WORD_LIST # no args so new puzzle
+test -s $WORD_LIST || cp $FULL_LIST $WORD_LIST # start with full list
 sed_commands $* | sed -f - $WORD_LIST >$MATCHES
 cp $MATCHES $WORD_LIST # save for next guess
 
-# pick guess from list, get letters in order most frequent first
+# pick guess from list. first get letters in order most frequent first
 letters=$(grep -o . $MATCHES | sort | uniq -c | sort -nr | tr -d '[0-9]')
 WITH_LETTER=$(mktemp) # subset containing letter
 for letter in $letters; do # if letter has matches, use them as new subset
