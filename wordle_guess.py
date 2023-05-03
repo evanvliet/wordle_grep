@@ -7,16 +7,12 @@ from collections import Counter
 FULL_LIST = "wordle_guess.dat"  # Full word list file
 WORD_LIST = "wg_last"  # Local file holding last matches
 
-def load_word_list(word_list):
+def load_words(words):
     try:
-        file = open(word_list, 'r')
+        file = open(words, 'r')
         return [word.strip() for word in file.readlines()]
     except:
         return []
-
-def save_word_list(words):
-    with open(WORD_LIST, 'w') as file:
-        file.write('\n'.join(words))
 
 def create_re(green, yellow, black):
     gyb = [] 
@@ -34,40 +30,34 @@ def create_re(green, yellow, black):
         dots=dots + '.' # add dot to position
     return re.compile("|".join(gyb))
 
-def get_matches(green, yellow, black):
-    gybre = create_re(green, yellow, black)
-    return [word for word in word_list if not gybre.match(word)]
+class WordleGuess:
+    def __init__(self, argv):
+        self.argv = argv[1:]
+        self.argv.extend(['.']*3)
+        self.matches = []
+        self.words = load_words(WORD_LIST)
+        if not self.words or 1 == len(argv):
+            self.words = load_words(FULL_LIST)
+            
+    def match(self):
+        gybre = create_re(self.argv[0], self.argv[1], self.argv[2])
+        self.matches = [word for word in self.words if not gybre.match(word)]
 
-def pick_guess(matches):
-    letter_counts = Counter(''.join(matches))
-    letters = [letter for letter, _ in letter_counts.most_common()]
-    for letter in letters:
-        subset = [word for word in matches if letter in word]
-        if subset:
-            matches = subset
-    return matches[0]
+    def save(self):
+        with open(WORD_LIST, 'w') as file:
+            file.write('\n'.join(self.matches))
 
-def main():
-    green_letters = '.'  #sys.argv[1]
-    yellow_letters = '...s'  #sys.argv[2]
-    black_letters = 'aroe'  #sys.argv[3]
-
-    if len(sys.argv) > 3:
-        green_letters = sys.argv[1]
-        yellow_letters = sys.argv[2]
-        black_letters = sys.argv[3]
-
-    global word_list
-    
-    word_list = load_word_list(WORD_LIST)
-    if len(word_list) == 0 or sys.argv == 1:
-        word_list = load_word_list(FULL_LIST)
-
-    matches = get_matches(green_letters, yellow_letters, black_letters)
-    save_word_list(matches)
-
-    guess = pick_guess(matches)
-    print(guess)
+    def guess(self):
+        letter_counts = Counter(''.join(self.matches))
+        letters = [letter for letter, _ in letter_counts.most_common()]
+        for letter in letters:
+            subset = [word for word in self.matches if letter in word]
+            if subset:
+                self.matches = subset
+        return self.matches[0] if self.matches else ''
 
 if __name__ == "__main__":
-    main()
+    wg = WordleGuess("prog . ...s aroe".split()) #sys.argv)
+    wg.match()
+    wg.save()
+    print(wg.guess())
