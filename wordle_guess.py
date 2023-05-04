@@ -58,17 +58,17 @@ argv.extend(['.']*3)  # default "." values
 # so we test NOT (not a or not b or not c or not d or not e)
 # to get a AND b AND c AND d AND e
 gyb = [f"(?!{green})"]  # mismatch green characters
-gyb.append(f".*[{black}]")  # match if any word black character
+gyb.append(f".*[{black}]")  # match if any black character
 dots = ''  # to specify position of yellow character
 for y in yellow:
     if y != '.':
         gyb.append(f"[^{y}]*$")  # match word without yellow
         gyb.append(f"^{dots}{y}")  # match words with yellow at same spot
     dots = dots + '.'  # add dot to position
-gyb_mis = re.compile("|".join(gyb))
+gybre = re.compile(f'(?!{"|".join(gyb)})')
 
 # get possible matches
-matches = [word for word in words if not gyb_mis.match(word)]
+matches = [word for word in words if gybre.match(word)]
 open(WORD_LIST, 'w').write('\n'.join(matches))  # save for next run
 
 # pick guess from list, first get letters in order most frequent first
