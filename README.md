@@ -13,7 +13,9 @@ Uses sed to find matches to a green, yellow, black specification. The specificat
 + \<yellow letters\> : *e.g.*, .e.h if 2nd and 4th letters are yellow e and h  
 + \<black letters\> : *e.g.*, jks if j, k, and s all are black  
 Use a dot (.) as a place holder, position significant for green and yellow
-letters. 
+letters.
+
+There is also a python version, at wordle_guess.py.
 
 ## Features
 + A plain dot means no characters of a particular color.
@@ -23,7 +25,7 @@ letters.
 
 ## Dependency
 The default word list comes from the pre-New York Times version of wordle.
-Uses sed, tr, grep, bash.
+Uses sed, tr, grep, bash, uniq.
 
 bee_grep
 ==
