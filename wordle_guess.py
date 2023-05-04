@@ -12,7 +12,7 @@ def load_words(words):
         file = open(words, 'r')
         return [word.strip() for word in file.readlines()]
     except:
-        return []
+        return None
 
 def mismatch(green, yellow, black):
     gyb = [] 
