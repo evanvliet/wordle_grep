@@ -1,0 +1,49 @@
+import re
+import sys
+from collections import Counter
+
+FULL_LIST = "wordle_guess.dat"  # Full word list file
+WORD_LIST = "wg_last"  # Local file holding last matches
+
+def load_word_list():
+    try:
+        with open(WORD_LIST, 'r') as file:
+            return [word.strip() for word in file.readlines()]
+    except FileNotFoundError:
+        with open(FULL_LIST, 'r') as file:
+            return [word.strip() for word in file.readlines()]
+
+def save_word_list(words):
+    with open(WORD_LIST, 'w') as file:
+        file.write('\n'.join(words))
+
+def get_matches(green, yellow, black):
+    pattern = f"^{green.replace('.', '[a-z]')}{yellow.replace('.', '.')}{black.replace('.', '[^a-z]')}$"
+    return [word for word in word_list if re.match(pattern, word)]
+
+def pick_guess(matches):
+    letter_counts = Counter(''.join(matches))
+    letters = [letter for letter, _ in letter_counts.most_common()]
+    subset = matches
+    for letter in letters:
+        subset = [word for word in matches if letter in word]
+        if subset:
+            matches = subset
+    return matches
+
+def main():
+    green_letters = '.'  #sys.argv[1]
+    yellow_letters = '.'  #sys.argv[2]
+    black_letters = '.'  #sys.argv[3]
+
+    global word_list
+    word_list = load_word_list()
+
+    matches = get_matches(green_letters, yellow_letters, black_letters)
+    save_word_list(matches)
+
+    guess = pick_guess(matches)
+    print(guess)
+
+if __name__ == "__main__":
+    main()

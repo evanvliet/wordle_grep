@@ -14,7 +14,7 @@ def load_words(words):
     except:
         return []
 
-def create_re(green, yellow, black):
+def mismatch(green, yellow, black):
     gyb = [] 
     # green yellow black patterns to be 'or'ed together and negation taken
     # because we can 'OR' patterns in an re but not 'AND' them
@@ -34,30 +34,31 @@ class WordleGuess:
     def __init__(self, argv):
         self.argv = argv[1:]
         self.argv.extend(['.']*3)
-        self.matches = []
         self.words = load_words(WORD_LIST)
         if not self.words or 1 == len(argv):
             self.words = load_words(FULL_LIST)
             
     def match(self):
-        gybre = create_re(self.argv[0], self.argv[1], self.argv[2])
-        self.matches = [word for word in self.words if not gybre.match(word)]
+        gyb_mis = mismatch(self.argv[0], self.argv[1], self.argv[2])
+        matches = [word for word in self.words if not gyb_mis.match(word)]
+        self.words = matches
 
     def save(self):
         with open(WORD_LIST, 'w') as file:
-            file.write('\n'.join(self.matches))
+            file.write('\n'.join(self.words))
 
     def guess(self):
-        letter_counts = Counter(''.join(self.matches))
+        letter_counts = Counter(''.join(self.words))
         letters = [letter for letter, _ in letter_counts.most_common()]
         for letter in letters:
-            subset = [word for word in self.matches if letter in word]
+            subset = [word for word in self.words if letter in word]
             if subset:
-                self.matches = subset
-        return self.matches[0] if self.matches else ''
+                self.words = subset
+        return self.words[0] if self.words else ''
 
 if __name__ == "__main__":
-    wg = WordleGuess("prog . ...s aroe".split()) #sys.argv)
+    # wg = WordleGuess("prog . ...s aroe".split()) #sys.argv)
+    wg = WordleGuess(sys.argv)
     wg.match()
     wg.save()
     print(wg.guess())
