@@ -42,9 +42,6 @@ def load_words(wordlist):
     except:
         return None
 
-a = open('gah.py', 'r').readlines()
-type(a)
-print(len(a))
 
 # use full list if no args or no words from previous scan
 words = load_words(WORD_LIST)
