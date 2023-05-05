@@ -38,11 +38,13 @@ WORD_LIST = "wg_last"  # Local file holding last matches
 
 def load_words(wordlist):
     try:
-        file = open(wordlist, 'r')
-        return [word.strip() for word in file.readlines()]
+        return open(wordlist, 'r').readlines()
     except:
         return None
 
+a = open('gah.py', 'r').readlines()
+type(a)
+print(len(a))
 
 # use full list if no args or no words from previous scan
 words = load_words(WORD_LIST)
