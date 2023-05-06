@@ -25,25 +25,23 @@
 #
 # Called without arguments, it scans a word list from the pre-New York
 # Times version of wordle, saved as __file__.replace('.py', '.dat'), e.g.
-# wordle_guess.dat. In this case the above algorithm for picking a
+# wordle_guess.dat. In this case the above algorithm for picking green
 # guess suggests "arose" - an ok choice.
 
+import os
 import re
 import sys
-from collections import Counter
+import collections
 
 FULL_LIST = __file__.replace('.py', '.dat')  # From old site
 WORD_LIST = "wg_last"  # Local file holding last matches
 
 
-def load_words(wordlist):
-    try:
-        return open(wordlist, 'r').readlines()
-    except:
-        return None
+def load_words(f):
+    return open(f, 'r').readlines() if os.path.isfile(f) else None
 
 
-# use full list if no args or no words from previous scan
+# use full list if no words from previous scan or no args
 words = load_words(WORD_LIST)
 if not words or len(sys.argv) == 1:
     words = load_words(FULL_LIST)
@@ -52,29 +50,29 @@ if not words or len(sys.argv) == 1:
 argv = sys.argv[1:]
 argv.extend(['.']*3)  # default "." values
 (green, yellow, black) = tuple(argv[:3])
-# green yellow black patterns to be 'or'ed together and negation taken
-# because we can 'OR' patterns in an re but not 'AND' them
-# so we test NOT (not a or not b or not c or not d or not e)
-# to get a AND b AND c AND d AND e
-gyb = [f"(?!{green})"]  # mismatch green characters
-gyb.append(f".*[{black}]")  # match if any black character
+# green yellow black patterns to be ORed together and negation taken
+# because we can OR patterns in an re but not AND them
+# so we test NOT (NOT green or NOT yellow or NOT black)
+# to get green AND yellow AND black
+gyb = [f"(?!{green})"]  # NOT green
+gyb.append(f".*[{black}]")  # NOT black
 dots = ''  # to specify position of yellow character
-for y in yellow:
+for y in yellow:  # NOT yellow because
     if y != '.':
-        gyb.append(f"[^{y}]*$")  # match word without yellow
-        gyb.append(f"^{dots}{y}")  # match words with yellow at same spot
+        gyb.append(f"[^{y}]*$")  # no yellow character
+        gyb.append(f"^{dots}{y}")  # has yellow at same spot
     dots = dots + '.'  # add dot to position
-gybre = re.compile(f'(?!{"|".join(gyb)})')
+gybre = re.compile(f'(?!{"|".join(gyb)})')  # NOT of disjunction
 
 # get possible matches
 matches = [word for word in words if gybre.match(word)]
-open(WORD_LIST, 'w').write('\n'.join(matches))  # save for next run
+open(WORD_LIST, 'w').write(''.join(matches))  # save for next run
 
 # pick guess from list, first get letters in order most frequent first
-letter_counts = Counter(''.join(matches))
+letter_counts = collections.Counter(''.join(matches))
 letters = [letter for letter, _ in letter_counts.most_common()]
 for letter in letters:
     with_letters = [word for word in matches if letter in word]
     if with_letters:  # if letter has matches, use them as new subset
         matches = with_letters
-print(matches[0] if matches else '')  # suggested guess
+print(matches[0][:-1] if matches else '-no words-')  # suggested guess
