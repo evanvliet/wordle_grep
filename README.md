@@ -18,34 +18,45 @@ letters.
 There is also a python version, at wordle_guess.py.
 
 ## Features
++ Solves puzzle in 3 or 4 guesses, almost always.
 + A plain dot means no characters of a particular color.
 + Picks word that has the most characters in common with other possible matches.
 + With no arguments, scans full word list.  The winner is "arose" - a good first guess.
 + Word list is refined, only last line need be specified.
 
-Consider the following wordle puzzle:
+An example may clarify this. Consider the following wordle puzzle:
 
-        <wordle_guess.png>
+ 
+ ![Alt text](https://github.com/evanvliet/wordle_grep/blob/main/wordle_guess.png?raw=true "Title")
 
-Use wordle guess as follows to get guesses:
+Use wordle guess as follows to get guesses. 
+Start without parameters to get arose.
 
     $ ./wordle_search 
-    arose 2315
+    arose
+
+The image above shows the upshot after entering this guess. To get a guess for the next run, call again with parameters that describe the colors of the letters.
+Start with the green characters - none yet so just a . as a placeholder. The second argument reflects the yellow o and e with .s to
+reflect 3rd and 5th spots, so ..o.e.  And finally the ars black letters.
+
+
     $ ./wordle_search . ..o.e ars
-    lemon 47
+    lemon
+
+This yields lemon as the second guess. 
+Call again with the colors of lemon. So ...o for the green o in 4th spot, .e..n for the yellow letters, and lm for the blacks.
+
     $ ./wordle_search ...o .e..n lm
-    enjoy 3
+    enjoy
+
+This yields enjoy. So call again wtih en.oy for green and . for no yellow and a j for blacks.
+
     $ ./wordle_search en.oy . j
-    envoy 1
+    envoy
 
-Start without parameters to get arose.
-Get second line by engering any green characters - none, yellow o and e with .s to
-reflect 3rd and 5th spots, and finally the ars black letters. This yields lemon as the second guess..
-Call again with arguments reflectin the colors of any changes from the last line, so ...o for the green o in 4th spot, .e..n for the yellow letters, and lm for the blacks.
-Wordle guess suggests enjoy. So calll again wtih updates: en..y for green (no need to enter the o, since it was covered in the last run) and . for no yellow and a j for blacks.
-Wordle_guess returns the answer.
+Wordle_guess returns envoy - the answer.
 
-Most words solve in 3 or 4 runs. Have no seen it not finding the word.
+Most solutions take but 3 or 4 runs. Have not seen it not finding the word.
 
 ## Dependency
 The default word list comes from the pre-New York Times version of wordle.
@@ -54,7 +65,7 @@ Uses sed, tr, grep, bash, uniq.
 bee_grep
 ==
 
-A comand line filter, prints possible words for the NY Times bee puzzle.  Use from a bash prompt.
+A comand line filter, prints possible words for the NY Times bee puzzle.  Use from a bash prompt. Or python3.
 
 ## Synopsis
 
