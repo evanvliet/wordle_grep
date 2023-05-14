@@ -40,13 +40,7 @@ WORD_LIST = "wgp_last"  # Local file holding last matches
 def load_words(f):
     return open(f, 'r').readlines() if os.path.isfile(f) else None
 
-
-# use full list if no words from previous scan or no args
-words = load_words(WORD_LIST)
-if not words or len(sys.argv) == 1:
-    words = load_words(FULL_LIST)
-
-# build regular expression to match green yellow black args
+# build regular expression for wordle matching
 argv = sys.argv[1:]
 argv.extend(['.']*3)  # default "." values
 (green, yellow, black) = tuple(argv[:3])
@@ -60,13 +54,19 @@ dots = ''  # to specify position of yellow character
 for y in yellow:  # NOT yellow because
     if y != '.':
         gyb.append(f"[^{y}]*$")  # no yellow character
-        gyb.append(f"^{dots}{y}")  # has yellow at same spot
+        gyb.append(f"{dots}{y}")  # has yellow at same spot
     dots = dots + '.'  # add dot to position
-gybre = re.compile(f'(?!{"|".join(gyb)})')  # NOT of disjunction
+gybre = f'(?!{"|".join(gyb)})'  # NOT of disjunction
 
 # get possible matches
-matches = [word for word in words if gybre.match(word)]
-open(WORD_LIST, 'w').write(''.join(matches))  # save for next run
+
+# use full list if no words from previous scan or no args
+word_list = load_words(WORD_LIST)  # recall last list
+if not word_list or len(sys.argv) == 1:  # no matches or no args
+    word_list = load_words(FULL_LIST)  # start with full list
+matches = [word for word in word_list if re.match(gybre, word)]
+open(WORD_LIST, 'w').write(''.join(matches))  # save for next guess
+
 # pick guess from list, first get letters in order most frequent first
 letter_counts = collections.Counter(''.join(matches))
 letters = [letter for letter, _ in letter_counts.most_common()]
@@ -74,4 +74,4 @@ for letter in letters:
     with_letters = [word for word in matches if letter in word]
     if with_letters:  # if letter has matches, use them as new subset
         matches = with_letters
-print(matches[0][:-1] if matches else '-no words-')  # suggested guess
+print(matches[0][:-1] if matches else '-no words-')  # suggest guess
