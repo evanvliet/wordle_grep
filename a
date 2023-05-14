@@ -1,2 +1,0 @@
-#!/bin/bash
-FULL_LIST=$(dirname $BASH_SOURCE)/wordle_grep.dat 
