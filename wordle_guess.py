@@ -67,7 +67,6 @@ gybre = re.compile(f'(?!{"|".join(gyb)})')  # NOT of disjunction
 # get possible matches
 matches = [word for word in words if gybre.match(word)]
 open(WORD_LIST, 'w').write(''.join(matches))  # save for next run
-
 # pick guess from list, first get letters in order most frequent first
 letter_counts = collections.Counter(''.join(matches))
 letters = [letter for letter, _ in letter_counts.most_common()]
