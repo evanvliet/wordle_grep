@@ -1,0 +1,26 @@
+#!/bin/bash : wordle guess
+# usage: wlg green yellow black, e.g. wl ar ....e st 
+OP="-e /^$1/!d -e /[$3]/d" PD=''
+NARGS=
+MATCHES=$(mktemp) 
+FULL_LIST=$(dirname $BASH_SOURCE)/wordle_grep.dat  # From old site
+WORD_LIST wgp_last  # Local file holding last matches
+SOURCE=$(mktemp)
+for CH in $(grep -o . <<< $2) # for each yellow
+do
+    [ $CH = '.' ] || OP="-e /^$PD$CH/d -e /$CH/!d $OP"
+    PD=$PD. # prefix dots for pattern
+done
+test "$1" || rm -f $WORD_LIST # no args so new puzzle
+sed $OP $SOURCE > $MATCHES
+
+# pick guess from list. first get letters in order most frequent first
+letters=$(grep -o . $MATCHES | sort | uniq -c | sort -nr | tr -d '[0-9]')
+WITH_LETTER=$(mktemp) # subset containing letter
+for letter in $letters; do # if letter has matches, use them as new subset
+    grep $letter $MATCHES >$WITH_LETTER && mv $WITH_LETTER $MATCHES
+done
+cat $MATCHES # suggested guess
+
+# clean up
+rm -f $WITH_LETTER $MATCHES
