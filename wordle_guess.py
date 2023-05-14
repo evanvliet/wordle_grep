@@ -34,7 +34,7 @@ import sys
 import collections
 
 FULL_LIST = __file__.replace('.py', '.dat')  # From old site
-WORD_LIST = "wg_last"  # Local file holding last matches
+WORD_LIST = "wgp_last"  # Local file holding last matches
 
 
 def load_words(f):
