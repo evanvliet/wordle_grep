@@ -19,6 +19,7 @@ There is also a python version, at wordle_guess.py.
 
 ## Features
 + Solves puzzle in 3 or 4 guesses, almost always.
++ Follows strict rules.
 + A plain dot means no characters of a particular color.
 + Picks word that has the most characters in common with other possible matches.
 + With no arguments, scans full word list.  The winner is "arose" - a good first guess.

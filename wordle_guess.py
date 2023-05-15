@@ -40,10 +40,16 @@ WORD_LIST = "wgp_last"  # Local file holding last matches
 def load_words(f):
     return open(f, 'r').readlines() if os.path.isfile(f) else None
 
-# build regular expression for wordle matching
+
+# get possible matches
+word_list = load_words(WORD_LIST)  # recall last list
+if not word_list or len(sys.argv) == 1:  # no matches or no args
+    word_list = load_words(FULL_LIST)  # start with full list
+# set paramaters from command line
 argv = sys.argv[1:]
 argv.extend(['.']*3)  # default "." values
 (green, yellow, black) = tuple(argv[:3])
+# build regular expression for wordle matching
 # green yellow black patterns to be ORed together and negation taken
 # because we can OR patterns in an re but not AND them
 # so we test NOT (NOT green or NOT yellow or NOT black)
@@ -58,12 +64,6 @@ for y in yellow:  # NOT yellow because
     dots = dots + '.'  # add dot to position
 gybre = f'(?!{"|".join(gyb)})'  # NOT of disjunction
 
-# get possible matches
-
-# use full list if no words from previous scan or no args
-word_list = load_words(WORD_LIST)  # recall last list
-if not word_list or len(sys.argv) == 1:  # no matches or no args
-    word_list = load_words(FULL_LIST)  # start with full list
 matches = [word for word in word_list if re.match(gybre, word)]
 open(WORD_LIST, 'w').write(''.join(matches))  # save for next guess
 
